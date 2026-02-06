@@ -7,10 +7,10 @@ body {
 
 body::before {
   content: "";
-  position: scroll;
+  position: fixed;
   inset: 0;
+  background: url("../assets/bg2.JPG") center / cover no-repeat;
   backdrop-filter: blur(3px);
-  background: rgba(0,0,0,0.65);
   z-index: -1;
 }
 
