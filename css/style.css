@@ -7,9 +7,9 @@ body {
 
 body::before {
   content: "";
-  position: fixed;
+  position: scroll;
   inset: 0;
-  backdrop-filter: blur(4px);
+  backdrop-filter: blur(3px);
   background: rgba(0,0,0,0.65);
   z-index: -1;
 }
