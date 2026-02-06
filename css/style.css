@@ -3,6 +3,7 @@ body {
   font-family: 'Segoe UI', system-ui, sans-serif;
   color: #fff;
   background: url("../assets/bg2.JPG") center / cover no-repeat;
+  z-index: -3;
 }
 
 body::before {
