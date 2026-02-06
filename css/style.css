@@ -10,7 +10,8 @@ body::before {
   position: fixed;
   inset: 0;
   background: url("../assets/bg2.JPG") center / cover no-repeat;
-  backdrop-filter: blur(3px);
+  backdrop-filter: blur(6px);
+  filter: brightness(0.6) saturate(0.9)
   z-index: -1;
 }
 
