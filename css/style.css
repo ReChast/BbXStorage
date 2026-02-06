@@ -2,7 +2,7 @@ body {
   margin: 0;
   font-family: 'Segoe UI', system-ui, sans-serif;
   color: #fff;
-  background: url("../assets/bg2.jpg") center/cover fixed no-repeat;
+  background: url("../assets/bg2.JPG") center/cover fixed no-repeat;
 }
 
 body::before {
