@@ -1,0 +1,9 @@
+{
+  "icons": [
+    {
+      "src": "assets/icon180.png",  // relativo a manifest.json
+      "sizes": "180x180",
+      "type": "image/png"
+    }
+  ]
+}
