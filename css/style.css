@@ -9,9 +9,9 @@ body {
 body::before {
   content: "";
   position: fixed;
-  inset: -20px; /* espande il layer per evitare bordi brutti */
+  inset: -15px; /* espande il layer per evitare bordi brutti */
   background: url("../assets/bg2.JPG") center / cover no-repeat;
-  filter: blur(8px) brightness(0.5) saturate(0.7);
+  filter: blur(6px) brightness(0.5) saturate(0.7);
   z-index: -1;
 }
 
