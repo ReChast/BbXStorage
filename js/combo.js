@@ -8,14 +8,17 @@ function openCombo() {
 
 function openListaCombo() {
   const combo = Storage.get("combo", []);
+
   document.getElementById("app").innerHTML = `
+    <button onclick="openRicercaCombo()">Ricerca</button>
     <button onclick="createCombo()">Crea</button>
     <button class="secondary" onclick="openCombo()">Indietro</button>
 
-    <h3>Combo registrate</h3>
-    ${combo.map(c=>`
-      <div>${Object.values(c).join(" - ")}</div>
-    `).join("")}
+    <h3>Combo CX</h3>
+    ${combo.filter(c=>c.tipo==="CX").map((c,i)=>renderCombo(c,i)).join("")}
+
+    <h3>Combo UX/BX</h3>
+    ${combo.filter(c=>c.tipo==="UXBX").map((c,i)=>renderCombo(c,i)).join("")}
   `;
 }
 
