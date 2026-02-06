@@ -1,0 +1,81 @@
+body {
+  margin: 0;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  color: #fff;
+  background: url("../assets/bg1.jpg") center/cover fixed no-repeat;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  backdrop-filter: blur(14px);
+  background: rgba(0,0,0,0.65);
+  z-index: -1;
+}
+
+#app {
+  padding: 20px;
+}
+
+h1, h2 {
+  text-align: center;
+  text-shadow: 0 0 12px #ff6a00;
+}
+
+.menu {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 320px;
+  margin: auto;
+}
+
+button {
+  padding: 14px;
+  border-radius: 10px;
+  border: none;
+  font-weight: bold;
+  background: linear-gradient(135deg, #ff6a00, #ff9100);
+  color: #000;
+  box-shadow: 0 0 15px rgba(255,106,0,.5);
+}
+
+button.secondary {
+  background: #111;
+  color: #ff6a00;
+  border: 1px solid #ff6a00;
+}
+
+input, select {
+  padding: 10px;
+  border-radius: 6px;
+  border: none;
+  width: 100%;
+  background: #111;
+  color: #fff;
+}
+
+.table {
+  margin-top: 20px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit,minmax(140px,1fr));
+  gap: 12px;
+}
+
+.list {
+  background: rgba(0,0,0,.4);
+  border-radius: 10px;
+  padding: 10px;
+}
+
+.list h3 {
+  text-align: center;
+  color: #ff9100;
+}
+
+.item {
+  display: flex;
+  justify-content: space-between;
+  margin: 6px 0;
+}
