@@ -1,3 +1,12 @@
+const pezziLabels = {
+  lameCX: "Lama CX",
+  assist: "Assist",
+  lameUXBX: "Lame UX / BX",
+  ratchet: "Ratchet",
+  bit: "Bit",
+  varie: "Varie"
+};
+
 const defaultPezzi = {
   lameCX: [],
   assist: [],
@@ -18,7 +27,7 @@ function openPezzi() {
     <div class="table">
       ${Object.keys(pezzi).map(k => `
         <div class="list">
-          <h3>${k}</h3>
+          <h3>${pezziLabels[k] ?? k}</h3>
           ${pezzi[k].map((p,i)=>`
             <div class="item pezzo">
               ${p}
