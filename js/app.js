@@ -11,7 +11,7 @@ function mainMenu() {
         <img src="assets/iglink.jpeg" alt="IG">
       </a>
       <a href="https://t.me/+kGy7DQaqUVRlZjI0" target="_blank" class="icon-link">
-        <img src="assets/tglink.png" alt="TG">
+        <img src="assets/tglink.jpeg" alt="TG">
       </a>
     </div>
   `;
