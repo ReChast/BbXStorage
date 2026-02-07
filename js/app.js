@@ -2,9 +2,9 @@ function mainMenu() {
   const app = document.getElementById("app");
   app.innerHTML = `
     <div class="menu">
-      <button onclick="openPezzi()">Pezzi</button>
-      <button onclick="openCombo()">Combo</button>
-      <button onclick="openRegistro()">Registro Risultati</button>
+      <button onclick="openpezzi()">Pezzi</button>
+      <button onclick="opencombo()">Combo</button>
+      <button onclick="openregistro()">Registro Risultati</button>
     </div>
     <div class="icon-bar">
       <a href="https://www.instagram.com/tps_bbx" target="_blank" class="icon-link">
