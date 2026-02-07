@@ -1,7 +1,7 @@
 function openCombo() {
   document.getElementById("app").innerHTML = `
     <h2>Combo</h2>
-    <button onclick="openListaCombo()">Lista Combo</button>
+    <button onclick="openlistacombo()">Lista Combo</button>
     <button class="secondary" onclick="mainMenu()">Indietro</button>
   `;
 }
@@ -10,7 +10,7 @@ function openListaCombo() {
   const combo = Storage.get("combo", []);
 
   document.getElementById("app").innerHTML = `
-    <button onclick="openRicercaCombo()">Ricerca</button>
+    <button onclick="openricercacombo()">Ricerca</button>
     <button onclick="createCombo()">Crea</button>
     <button class="secondary" onclick="openCombo()">Indietro</button>
 
