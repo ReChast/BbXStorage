@@ -1,23 +1,3 @@
-const pezzilabels = {
-  lamecx: "Lame CX",
-  lameCX: "Lame CX",
-  assist: "Assist",
-  lameuxbx: "Lame UX / BX",
-  lameUXBX: "Lame UX / BX",
-  ratchet: "Ratchet",
-  bit: "Bit",
-  varie: "Varie"
-};
-
-const defaultpezzi = {
-  lamecx: [],
-  assist: [],
-  lameuxbx: [],
-  ratchet: [],
-  bit: [],
-  varie: []
-};
-
 function openpezzi() {
   const pezzi = storage.get("pezzi", defaultpezzi);
 
@@ -31,9 +11,15 @@ function openpezzi() {
     </div>
 
     <div class="table">
-      ${Object.keys(pezzi).map(k => `
+      ${Object.keys(pezzi).map(k => {
+        // TRUCCO: Converto la chiave in minuscolo per cercare l'etichetta
+        // Così "lameCX", "LameCX" e "lamecx" trovano tutti "Lame CX"
+        const chiaveMinuscola = k.toLowerCase();
+        const titolo = pezzilabels[k] || pezzilabels[chiaveMinuscola] || k;
+
+        return `
         <div class="list">
-          <h3>${pezzilabels[k] ?? k}</h3>
+          <h3>${titolo}</h3>
           ${pezzi[k].map((p,i)=>`
             <div class="item pezzo">
               <span>${p}</span>
@@ -41,56 +27,8 @@ function openpezzi() {
             </div>
           `).join("")}
         </div>
-      `).join("")}
+        `;
+      }).join("")}
     </div>
   `;
-}
-
-function addpezzo() {
-  openOverlay(`
-    <h2>Aggiungi pezzo</h2>
-    <input id="nome" placeholder="Nome del pezzo">
-    <br><br>
-    <select id="tipo">
-      <option value="lamecx">Lama CX</option>
-      <option value="assist">Assist</option>
-      <option value="lameuxbx">Lama UX/BX</option>
-      <option value="ratchet">Ratchet</option>
-      <option value="bit">Bit</option>
-      <option value="varie">Varie</option>
-    </select>
-    <div style="margin-top:20px; display:flex; gap:10px;">
-      <button onclick="confirmaddpezzo()">Conferma</button>
-      <button class="secondary" onclick="closeOverlay()">Annulla</button>
-    </div>
-  `);
-}
-
-function confirmaddpezzo() {
-  const nome = document.getElementById("nome").value;
-  const tipo = document.getElementById("tipo").value;
-  if (!nome) return;
-
-  const pezzi = storage.get("pezzi", defaultpezzi);
-  if (!pezzi[tipo]) pezzi[tipo] = [];
-  
-  pezzi[tipo].push(nome);
-  storage.set("pezzi", pezzi);
-  closeOverlay();
-  openpezzi(); 
-}
-
-function deletepezzo(tipo, index) {
-  if (!confirm("Eliminare?")) return;
-  const pezzi = storage.get("pezzi", defaultpezzi);
-  pezzi[tipo].splice(index,1);
-  storage.set("pezzi", pezzi);
-  openpezzi();
-}
-
-function filterpezzi(q) {
-  document.querySelectorAll(".pezzo").forEach(p=>{
-    const text = p.querySelector('span').innerText;
-    p.style.display = text.toLowerCase().includes(q.toLowerCase()) ? "flex" : "none";
-  });
 }
