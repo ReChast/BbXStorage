@@ -1,19 +1,20 @@
 function mainMenu() {
-  document.getElementById("app").innerHTML = `
+  const app = document.getElementById("app");
+  app.innerHTML = `
     <div class="menu">
       <button onclick="openPezzi()">Pezzi</button>
       <button onclick="openCombo()">Combo</button>
       <button onclick="openRegistro()">Registro Risultati</button>
     </div>
-
     <div class="icon-bar">
-      <a href="https://www.instagram.com/tps_bbx?igsh=MTJuYmhjYmZpZDJxaQ%3D%3D&utm_source=qr" target="_blank" class="icon-link">
-        <img src="assets/iglink.jpeg" alt="Link 1">
+      <a href="https://www.instagram.com/tps_bbx" target="_blank" class="icon-link">
+        <img src="assets/iglink.jpeg" alt="IG">
       </a>
       <a href="https://t.me/+kGy7DQaqUVRlZjI0" target="_blank" class="icon-link">
-        <img src="assets/tglink.jpeg" alt="Link 2">
+        <img src="assets/tglink.png" alt="TG">
       </a>
-       
     </div>
   `;
 }
+
+mainMenu();
