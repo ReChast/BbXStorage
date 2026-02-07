@@ -1,6 +1,10 @@
-const Storage = {
+const storage = { // <--- S minuscola
   get(key, fallback) {
-    return JSON.parse(localStorage.getItem(key)) ?? fallback;
+    try {
+      return JSON.parse(localStorage.getItem(key)) ?? fallback;
+    } catch (e) {
+      return fallback;
+    }
   },
   set(key, value) {
     localStorage.setItem(key, JSON.stringify(value));
