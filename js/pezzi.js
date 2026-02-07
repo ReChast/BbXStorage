@@ -17,7 +17,7 @@ const defaultpezzi = {
 };
 
 function openpezzi() {
-  const pezzi = Storage.get("pezzi", defaultpezzi);
+  const pezzi = storage.get("pezzi", defaultpezzi);
 
   document.getElementById("app").innerHTML = `
     <div class="header-tools">
@@ -69,20 +69,20 @@ function confirmaddpezzo() {
   const tipo = document.getElementById("tipo").value;
   if (!nome) return;
 
-  const pezzi = Storage.get("pezzi", defaultpezzi);
+  const pezzi = storage.get("pezzi", defaultpezzi);
   if (!pezzi[tipo]) pezzi[tipo] = [];
   
   pezzi[tipo].push(nome);
-  Storage.set("pezzi", pezzi);
+  storage.set("pezzi", pezzi);
   closeOverlay();
   openpezzi(); 
 }
 
 function deletepezzo(tipo, index) {
   if (!confirm("Eliminare?")) return;
-  const pezzi = Storage.get("pezzi", defaultpezzi);
+  const pezzi = storage.get("pezzi", defaultpezzi);
   pezzi[tipo].splice(index,1);
-  Storage.set("pezzi", pezzi);
+  storage.set("pezzi", pezzi);
   openpezzi();
 }
 
