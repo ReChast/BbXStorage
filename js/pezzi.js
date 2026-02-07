@@ -1,5 +1,5 @@
 const pezziLabels = {
-  lameCX: "Lama CX",
+  lameCX: "Lame CX",
   assist: "Assist",
   lameUXBX: "Lame UX / BX",
   ratchet: "Ratchet",
