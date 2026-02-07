@@ -1,7 +1,7 @@
 const pezzilabels = {
-  lamecx: "Lame CX",
+  lameCX: "Lame CX",
   assist: "Assist",
-  lameuxbx: "Lame UX / BX",
+  lameUXBX: "Lame UX / BX",
   ratchet: "Ratchet",
   bit: "Bit",
   varie: "Varie"
