@@ -135,3 +135,38 @@ textarea {
   justify-content: space-between;
   margin: 6px 0;
 }
+
+/* Contenitore dei loghi */
+.icon-bar {
+  display: flex;
+  justify-content: center;
+  gap: 15px;      /* Spazio tra i pulsanti */
+  margin-top: 40px;
+}
+
+/* Il "pulsante" quadrato */
+.icon-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 45px;    /* Dimensione fissa: cambia questa per ingrandirli tutti */
+  height: 45px;   /* Deve essere uguale alla width */
+  background-color: white; /* O il colore che preferisci */
+  border-radius: 8px;      /* Angoli leggermente arrotondati */
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  transition: transform 0.1s ease;
+  overflow: hidden;        /* Evita che l'immagine esca dai bordi */
+}
+
+/* L'immagine dentro il pulsante */
+.icon-link img {
+  width: 100%;    /* Prende tutta la larghezza del pulsante */
+  height: 100%;   /* Prende tutta l'altezza */
+  object-fit: contain; /* Mantiene le proporzioni dell'icona senza tagliarla */
+  padding: 5px;   /* Crea un po' di "aria" tra l'icona e il bordo del pulsante */
+}
+
+/* Effetto al tocco/click */
+.icon-link:active {
+  transform: scale(0.9);
+}
