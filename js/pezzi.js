@@ -1,5 +1,4 @@
 const pezzilabels = {
-  // Compatibilità maiuscole/minuscole
   lamecx: "Lame CX",
   lameCX: "Lame CX", 
   assist: "Assist",
@@ -33,7 +32,6 @@ function openpezzi() {
 
     <div class="table">
       ${Object.keys(pezzi).map(k => {
-        // Logica per trovare il titolo corretto
         const chiaveMinuscola = k.toLowerCase();
         const titolo = pezzilabels[k] || pezzilabels[chiaveMinuscola] || k;
 
@@ -54,26 +52,24 @@ function openpezzi() {
 }
 
 function addpezzo() {
-  // Usa openOverlay (definito in ui.js)
+  const fieldStyle = "display:block; width:100%; margin-bottom:15px; padding:10px; box-sizing:border-box; background:#222; border:1px solid #444; color:white; border-radius:5px;";
+  const labelStyle = "display:block; margin-bottom:5px; color:#ff8c00; font-size:14px;";
+
   openOverlay(`
     <h2>Aggiungi pezzo</h2>
     
-    <div style="margin-bottom:15px;">
-      <label style="display:block; margin-bottom:5px; color:#ff8c00; font-size:14px;">Nome</label>
-      <input id="nome" placeholder="Nome del pezzo" style="width:100%; box-sizing:border-box; padding:10px;">
-    </div>
+    <label style="${labelStyle}">Nome Pezzo</label>
+    <input id="nome" placeholder="Es. Wizard Rod" style="${fieldStyle}">
     
-    <div style="margin-bottom:15px;">
-      <label style="display:block; margin-bottom:5px; color:#ff8c00; font-size:14px;">Categoria</label>
-      <select id="tipo" style="width:100%; padding:10px; background:#222; color:white; border:1px solid #444; border-radius:5px;">
-        <option value="lamecx">Lama CX</option>
-        <option value="assist">Assist</option>
-        <option value="lameuxbx">Lama UX/BX</option>
-        <option value="ratchet">Ratchet</option>
-        <option value="bit">Bit</option>
-        <option value="varie">Varie</option>
-      </select>
-    </div>
+    <label style="${labelStyle}">Categoria</label>
+    <select id="tipo" style="${fieldStyle}">
+      <option value="lamecx">Lama CX</option>
+      <option value="assist">Assist</option>
+      <option value="lameuxbx">Lama UX/BX</option>
+      <option value="ratchet">Ratchet</option>
+      <option value="bit">Bit</option>
+      <option value="varie">Varie</option>
+    </select>
 
     <div style="margin-top:20px; display:flex; gap:10px;">
       <button onclick="confirmaddpezzo()" style="flex:1;">Conferma</button>
@@ -88,8 +84,6 @@ function confirmaddpezzo() {
   if (!nome) return;
 
   const pezzi = storage.get("pezzi", defaultpezzi);
-  
-  // Creiamo l'array se non esiste (sicurezza)
   if (!pezzi[tipo]) pezzi[tipo] = [];
   
   pezzi[tipo].push(nome);
