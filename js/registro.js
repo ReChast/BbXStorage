@@ -78,47 +78,66 @@ function renderEvento(e, mese, index) {
 /* ====== OVERLAY CREAZIONE EVENTO ====== */
 
 function openOverlayEvento() {
-  // Se provinceItaliane non è definito globalmente, darà errore qui
   document.body.insertAdjacentHTML("beforeend", `
     <div class="overlay">
       <div class="modal">
         <h3>Crea Evento</h3>
 
-        <label>Quando</label>
-        <input type="date" id="ev-date">
-
-        <label>Ore check-in</label>
-        <input type="time" id="ev-checkin">
-
-        <label>Ore start</label>
-        <input type="time" id="ev-start">
-
-        <label>Dove</label>
-        <input list="province" id="ev-provincia">
-        <datalist id="province">
-          ${provinceItaliane.map(p => `<option value="${p}">`).join("")}
-        </datalist>
-
-        <label>Location</label>
-        <input id="ev-location" placeholder="Es. 21st Century Manga Livorno">
-
-        <label>Indirizzo</label>
-        <textarea id="ev-indirizzo" placeholder="Es. Via Palestro 17, Livorno"></textarea>
-
-        <label>Link GMaps</label>
-        <input id="ev-maps">
-
-        <div class="toggle">
-          <button id="rankedBtn" onclick="setRanked(true)">Ranked</button>
-          <button id="unrankedBtn" onclick="setRanked(false)" class="active">Unranked</button>
+        <div class="form-group">
+          <label>Quando</label>
+          <input type="date" id="ev-date">
         </div>
 
-        <label>Quota partecipazione (€)</label>
-        <input id="ev-quota" type="number" min="0">
+        <div class="form-row">
+          <div class="form-group half">
+            <label>Check-in</label>
+            <input type="time" id="ev-checkin">
+          </div>
+          <div class="form-group half">
+            <label>Start</label>
+            <input type="time" id="ev-start">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Dove (Provincia)</label>
+          <input list="province" id="ev-provincia">
+          <datalist id="province">
+            ${provinceItaliane.map(p => `<option value="${p}">`).join("")}
+          </datalist>
+        </div>
+
+        <div class="form-group">
+          <label>Location (Nome locale)</label>
+          <input id="ev-location" placeholder="Es. 21st Century Manga">
+        </div>
+
+        <div class="form-group">
+          <label>Indirizzo</label>
+          <textarea id="ev-indirizzo" rows="2" placeholder="Via Palestro 17..."></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>Link GMaps</label>
+          <input id="ev-maps">
+        </div>
+
+        <div class="form-group toggle-group">
+          <label>Tipologia</label>
+          <div class="toggle">
+            <button id="rankedBtn" onclick="setRanked(true)">Ranked</button>
+            <button id="unrankedBtn" onclick="setRanked(false)" class="active">Unranked</button>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Quota (€)</label>
+          <input id="ev-quota" type="number" min="0">
+        </div>
 
         <div class="actions">
-          <button onclick="saveEvento()">Inserisci Evento</button>
-          <button onclick="closeOverlay()">Annulla</button>
+          <button class="btn-save" onclick="saveEvento()">Salva</button>
+          <button class="btn-cancel" onclick="closeOverlay()">Annulla</button>
         </div>
       </div>
     </div>
@@ -126,6 +145,7 @@ function openOverlayEvento() {
 
   window.eventRanked = false;
 }
+
 
 /* ====== RANKED / UNRANKED ====== */
 
