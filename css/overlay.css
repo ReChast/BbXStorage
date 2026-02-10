@@ -12,17 +12,22 @@
 
 .overlay-box {
   background: #111;
-  border: 1px solid #333; /* Bordo sottile */
+  border: 1px solid #333;
   border-radius: 14px;
-  padding: 20px;
-  width: 90%;
-  max-width: 400px; /* Un po' più stretto per essere elegante */
-  box-shadow: 0 0 25px rgba(255,106,0,.4); /* Glow arancione */
+  
+  /* MODIFICA QUESTE RIGHE */
+  padding: 20px;       /* Spazio interno */
+  width: 90%;          /* Occupa il 90% dello schermo */
+  max-width: 400px;    /* Ma non più di 400px */
+  margin: auto;        /* Centra se serve */
+  
+  box-shadow: 0 0 25px rgba(255,106,0,.4);
   color: #fff;
   max-height: 90vh;
   display: flex;
   flex-direction: column;
 }
+
 
 /* Scroll area se il form è lungo su schermi piccoli */
 .form-scroll {
