@@ -28,42 +28,38 @@ body::before {
   padding: 20px 0 12px;
 }
 
+/* Header Contenitore */
+.app-header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 30px 0 15px;
+}
+
+/* LOGO IMMAGINE */
 .bbx-logo {
   width: 100%;
-  max-width: 260px;
+  max-width: 280px; /* Larghezza massima su desktop/tablet */
   height: auto;
+  display: block;
+  
+  /* L'effetto NEON ARANCIONE applicato all'immagine */
+  filter: drop-shadow(0 0 8px rgba(255, 106, 0, 0.6));
+  
+  /* Animazione di entrata */
+  animation: logoFadeIn 1.5s ease-out forwards;
 }
 
-/* Titolo principale */
-.title {
-  font-size: 56px;
-  font-weight: 800;
-  letter-spacing: 3px;
-  fill: #ff8c00;
-  dominant-baseline: middle;
-  filter: drop-shadow(0 0 8px rgba(255,140,0,0.7));
-}
-
-/* Firma */
-.subtitle {
-  font-size: 20px;
-  letter-spacing: 2px;
-  fill: #aaa;
-  dominant-baseline: middle;
-}
-
-.title {
-  animation: glowIn 2s ease-out forwards;
-}
-
-@keyframes glowIn {
+@keyframes logoFadeIn {
   from {
     opacity: 0;
-    filter: drop-shadow(0 0 0 rgba(255,140,0,0));
+    transform: scale(0.9);
+    filter: drop-shadow(0 0 0 rgba(255, 106, 0, 0));
   }
   to {
     opacity: 1;
-    filter: drop-shadow(0 0 8px rgba(255,140,0,0.7));
+    transform: scale(1);
+    filter: drop-shadow(0 0 12px rgba(255, 106, 0, 0.8));
   }
 }
 
