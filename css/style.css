@@ -15,9 +15,9 @@ body {
 body::before {
   content: "";
   position: fixed;
-  inset: -15px; /* espande il layer per evitare bordi brutti */
+  inset: -10px; /* espande il layer per evitare bordi brutti */
   background: url("../assets/bg2.JPG") center / cover no-repeat;
-  filter: blur(6px) brightness(0.5) saturate(0.7);
+  filter: blur(4px) brightness(0.5) saturate(0.7);
   z-index: -1;
 }
 
@@ -36,7 +36,7 @@ body::before {
 
 /* Titolo principale */
 .title {
-  font-size: 44px;
+  font-size: 56px;
   font-weight: 800;
   letter-spacing: 3px;
   fill: #ff8c00;
@@ -46,14 +46,14 @@ body::before {
 
 /* Firma */
 .subtitle {
-  font-size: 16px;
+  font-size: 20px;
   letter-spacing: 2px;
   fill: #aaa;
   dominant-baseline: middle;
 }
 
 .title {
-  animation: glowIn 1s ease-out forwards;
+  animation: glowIn 2s ease-out forwards;
 }
 
 @keyframes glowIn {
@@ -74,7 +74,7 @@ body::before {
 
 h1, h2 {
   text-align: center;
-  text-shadow: 0 0 12px #ff6a00;
+  text-shadow: 0 0 14px #ff6a00;
 }
 
 .menu {
@@ -96,10 +96,21 @@ button {
 }
 
 button.secondary {
-  background: #111;
-  color: #ff6a00;
-  border: 1px solid #ff6a00;
+  background: transparent; 
+  color: #888;              /* Grigio per non distrarre dai tasti principali */
+  border: 1px solid #333;
+  box-shadow: none;         /* Togliamo il bagliore arancione */
+  font-size: 0.9em;
+  margin-top: 5px;
+  transition: all 0.3s ease;
 }
+
+button.secondary:hover {
+  color: #ff6a00;           /* Diventa arancione quando ci passi sopra */
+  border-color: #ff6a00;
+  background: rgba(255, 106, 0, 0.05);
+}
+
 
 input,
 select,
