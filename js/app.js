@@ -4,7 +4,7 @@ function mainmenu() {
     <div class="menu">
       <button onclick="openpezzi()">Pezzi</button>
       <button onclick="opencombo()">Combo</button>
-      <button onclick="openregistro()">Registro Risultati</button>
+      <button onclick="openregistro()">Registro Eventi</button>
     </div>
     <div class="icon-bar">
       <a href="https://www.instagram.com/tps_bbx" target="_blank" class="icon-link">
