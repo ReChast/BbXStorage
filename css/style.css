@@ -1,3 +1,9 @@
+/* AGGIUNGI QUESTO IN CIMA A STYLE.CSS */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+
 body {
   margin: 0;
   font-family: 'Segoe UI', system-ui, sans-serif;
