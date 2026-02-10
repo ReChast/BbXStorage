@@ -13,7 +13,7 @@ function openRegistroEventi() {
 
   document.getElementById("app").innerHTML = `
     <div class="header">
-      <button onclick="openMainmenu()">⬅ Indietro</button>
+      <button onclick="openmainmenu()">⬅ Indietro</button>
       <button onclick="openOverlayEvento()">➕ Crea Evento</button>
     </div>
 
@@ -102,7 +102,7 @@ function openOverlayEvento() {
         <input id="ev-location" placeholder="Es. 21st Century Manga Livorno">
 
         <label>Indirizzo</label>
-        <textarea id="ev-indirizzo"></textarea>
+        <textarea id="ev-indirizzo" placeholder="Es. Via Palestro 17, Livorno"></textarea>
 
         <label>Link GMaps</label>
         <input id="ev-maps">
@@ -177,6 +177,6 @@ function ev(id) {
   return document.getElementById(id).value;
 }
 
-function closeOverlay() {
+function closeoverlay() {
   document.querySelector(".overlay")?.remove();
 }
