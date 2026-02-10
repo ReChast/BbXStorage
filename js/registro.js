@@ -61,7 +61,7 @@ function renderEvento(e, mese, index) {
 
   const pin = e.maps
     ? `<a href="${e.maps}" target="_blank">📍</a>`
-    : "";
+    : `<span style="opacity:0.3">📍</span>`; // Grigio se non c'è mappa
 
   return `
     <div class="evento">
@@ -70,9 +70,78 @@ function renderEvento(e, mese, index) {
       ${e.quota}€ -
       ${e.checkin}
       ${pin}
+      <button class="btn-icon" onclick="openDettagliEvento('${mese}', ${index})">🗒️</button>
+      
       <button class="trash" onclick="deleteEvento('${mese}', ${index})">🗑️</button>
     </div>
   `;
+}
+
+/* ====== OVERLAY DETTAGLI (SOLO LETTURA) ====== */
+
+function openDettagliEvento(mese, index) {
+  // 1. Recuperiamo i dati aggiornati
+  const eventi = storage.get("eventi", defaultEventi);
+  const e = eventi[mese][index];
+
+  // 2. Formattiamo alcuni dati per renderli più carini
+  const dataBella = new Date(e.date).toLocaleDateString("it-IT", { 
+    weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' 
+  });
+  
+  const statusRanked = e.ranked ? "🏆 Ranked" : "🛡️ Unranked";
+  
+  const linkMappa = e.maps 
+    ? `<a href="${e.maps}" target="_blank" style="color:blue; text-decoration:underline;">Apri su Google Maps</a>` 
+    : "Non inserito";
+
+  // 3. Creiamo l'HTML statico
+  document.body.insertAdjacentHTML("beforeend", `
+    <div class="overlay">
+      <div class="modal">
+        <h3>Dettagli Evento</h3>
+
+        <div class="info-row">
+          <label>Data:</label>
+          <div><strong>${dataBella}</strong></div>
+        </div>
+
+        <div class="info-row">
+          <label>Orari:</label>
+          <div>Check-in: <strong>${e.checkin}</strong> | Start: <strong>${e.start}</strong></div>
+        </div>
+
+        <div class="info-row">
+          <label>Luogo:</label>
+          <div>${e.location} (${e.provincia})</div>
+        </div>
+
+        <div class="info-row">
+          <label>Indirizzo:</label>
+          <div>${e.indirizzo || "Non specificato"}</div>
+        </div>
+
+        <div class="info-row">
+          <label>Mappa:</label>
+          <div>${linkMappa}</div>
+        </div>
+
+        <div class="info-row">
+          <label>Tipologia:</label>
+          <div>${statusRanked}</div>
+        </div>
+
+        <div class="info-row">
+          <label>Quota:</label>
+          <div>${e.quota} €</div>
+        </div>
+
+        <div class="actions" style="margin-top: 20px;">
+          <button class="btn-cancel" onclick="closeOverlay()" style="width:100%">Chiudi</button>
+        </div>
+      </div>
+    </div>
+  `);
 }
 
 /* ====== OVERLAY CREAZIONE EVENTO ====== */
