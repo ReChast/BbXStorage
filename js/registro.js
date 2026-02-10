@@ -207,12 +207,23 @@ function setRanked(val) {
   document.getElementById("unrankedBtn").classList.toggle("active", !val);
 }
 
+/* ====== SALVATAGGIO EVENTO (CORRETTO) ====== */
+
 function saveEvento() {
   const date = document.getElementById("ev-date").value;
   if (!date) return alert("Manca la data!");
 
+  // 1. Recuperiamo il valore della mappa
+  let mapLink = ev("ev-maps").trim();
+
+  // 2. Se c'è un link, controlliamo se ha il protocollo
+  if (mapLink && !mapLink.startsWith("http://") && !mapLink.startsWith("https://")) {
+    mapLink = "https://" + mapLink;
+  }
+
   const mese = date.slice(0, 7);
   const eventi = storage.get("eventi", defaultEventi);
+
   if (!eventi[mese]) eventi[mese] = [];
 
   eventi[mese].push({
@@ -222,7 +233,7 @@ function saveEvento() {
     provincia: ev("ev-provincia"),
     location: ev("ev-location"),
     indirizzo: ev("ev-indirizzo"),
-    maps: ev("ev-maps"),
+    maps: mapLink, // Usiamo il link corretto
     ranked: window.eventRanked,
     quota: Number(ev("ev-quota"))
   });
@@ -231,6 +242,7 @@ function saveEvento() {
   closeOverlay();
   openRegistroEventi();
 }
+
 
 function deleteEvento(mese, index) {
   if(!confirm("Eliminare evento?")) return;
