@@ -3,8 +3,10 @@
  ***********************/
 
 /* ====== STORAGE ====== */
-
 const defaultEventi = {};
+
+// AGGIUNTA NECESSARIA: Lista delle province per far funzionare la map()
+const provinceItaliane = ["MI", "RM", "NA", "TO", "FI", "LI", "BA", "PA", "BO"]; 
 
 /* ====== APERTURA SEZIONE ====== */
 
@@ -13,7 +15,7 @@ function openRegistroEventi() {
 
   document.getElementById("app").innerHTML = `
     <div class="header">
-      <button onclick="openmainmenu()">⬅ Indietro</button>
+      <button onclick="mainmenu()">⬅ Indietro</button>
       <button onclick="openOverlayEvento()">➕ Crea Evento</button>
     </div>
 
@@ -33,8 +35,6 @@ function renderCalendar(eventi) {
   }
 
   return mesi.map(mese => {
-
-    // ORDINA EVENTI PER DATA
     eventi[mese].sort((a, b) => new Date(a.date) - new Date(b.date));
 
     const nomeMese = new Date(mese + "-01")
@@ -78,6 +78,7 @@ function renderEvento(e, mese, index) {
 /* ====== OVERLAY CREAZIONE EVENTO ====== */
 
 function openOverlayEvento() {
+  // Se provinceItaliane non è definito globalmente, darà errore qui
   document.body.insertAdjacentHTML("beforeend", `
     <div class="overlay">
       <div class="modal">
@@ -158,7 +159,7 @@ function saveEvento() {
   });
 
   storage.set("eventi", eventi);
-  closeOverlay();
+  closeOverlay(); // Chiama la versione con O maiuscola
   openRegistroEventi();
 }
 
@@ -177,6 +178,7 @@ function ev(id) {
   return document.getElementById(id).value;
 }
 
-function closeoverlay() {
+// CORREZIONE 2: CamelCase per corrispondere alle chiamate sopra
+function closeOverlay() {
   document.querySelector(".overlay")?.remove();
 }
