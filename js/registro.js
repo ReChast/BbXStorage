@@ -52,7 +52,6 @@ function renderEvento(e, mese, index) {
 
   const tipo = e.ranked ? `<span style="color:#ff6a00; font-weight:bold;">R</span>` : `<span style="opacity:0.7">U</span>`;
   
-  // Icona Mappa (grigia se non c'è, colorata se c'è)
   const pinStyle = e.maps ? "cursor:pointer;" : "opacity:0.3; pointer-events:none;";
   const pinLink = e.maps ? `onclick="window.open('${e.maps}', '_blank')"` : "";
 
@@ -67,91 +66,115 @@ function renderEvento(e, mese, index) {
       
       <div class="ev-actions">
         <span class="btn-icon" ${pinLink} style="${pinStyle}">📍</span>
-        
         <span class="btn-icon" onclick="openDettagliEvento('${mese}', ${index})">🗒️</span>
-        
         <span class="btn-icon trash" onclick="deleteEvento('${mese}', ${index})">🗑️</span>
       </div>
     </div>
   `;
 }
 
-/* ====== OVERLAY CREAZIONE EVENTO (INPUT) ====== */
-function openOverlayEvento() {
+/* ====== OVERLAY CREAZIONE / MODIFICA (LOGICA UNIFICATA) ====== */
+function openOverlayEvento(meseToEdit = null, indexToEdit = null) {
+  
+  // 1. Variabili per gestire la modalità Modifica
+  let isEdit = (meseToEdit !== null && indexToEdit !== null);
+  let evt = {}; 
+  
+  // Se stiamo modificando, carichiamo i dati esistenti
+  if (isEdit) {
+    const eventi = storage.get("eventi", defaultEventi);
+    evt = eventi[meseToEdit][indexToEdit];
+    window.eventRanked = evt.ranked; // Impostiamo lo stato ranked salvato
+  } else {
+    // Se è nuovo, valori default
+    window.eventRanked = false;
+    evt = { date: "", checkin: "", start: "", provincia: "", location: "", indirizzo: "", maps: "", quota: "" };
+  }
+
+  // Definiamo le classi per i bottoni Ranked/Unranked
+  const activeR = window.eventRanked ? "active" : "";
+  const activeU = !window.eventRanked ? "active" : "";
+  
+  // Titolo e funzione del bottone Salva
+  const titolo = isEdit ? "Modifica Evento" : "Nuovo Evento";
+  // Se è modifica passiamo i vecchi indici, altrimenti niente
+  const saveAction = isEdit ? `saveEvento('${meseToEdit}', ${indexToEdit})` : `saveEvento()`;
+
   document.body.insertAdjacentHTML("beforeend", `
     <div class="overlay">
       <div class="overlay-box">
-        <h2 style="color:#ff6a00; text-align:center; margin-bottom:20px;">Nuovo Evento</h2>
+        <h2 style="color:#ff6a00; text-align:center; margin-bottom:20px;">${titolo}</h2>
 
         <div class="form-scroll">
             <div class="form-group">
-            <label>Quando</label>
-            <input type="date" id="ev-date" style="width:100%">
+              <label>Quando</label>
+              <input type="date" id="ev-date" value="${evt.date}">
             </div>
 
             <div class="form-row">
-            <div class="form-group half">
-                <label>Check-in</label>
-                <input type="time" id="ev-checkin" style="width:100%">
-            </div>
-            <div class="form-group half">
-                <label>Start</label>
-                <input type="time" id="ev-start" style="width:100%">
-            </div>
-            </div>
-
-            <div class="form-group">
-            <label>Dove (Provincia)</label>
-            <input list="province" id="ev-provincia" style="width:100%">
-            <datalist id="province">
-                ${provinceItaliane.map(p => `<option value="${p}">`).join("")}
-            </datalist>
+              <div class="form-group half">
+                  <label>Check-in</label>
+                  <input type="time" id="ev-checkin" value="${evt.checkin}">
+              </div>
+              <div class="form-group half">
+                  <label>Start</label>
+                  <input type="time" id="ev-start" value="${evt.start}">
+              </div>
             </div>
 
             <div class="form-group">
-            <label>Location</label>
-            <input id="ev-location" placeholder="Es. Nome Locale" style="width:100%">
+              <label>Dove (Provincia)</label>
+              <input list="province" id="ev-provincia" value="${evt.provincia}">
+              <datalist id="province">
+                  ${provinceItaliane.map(p => `<option value="${p}">`).join("")}
+              </datalist>
             </div>
 
             <div class="form-group">
-            <label>Indirizzo</label>
-            <textarea id="ev-indirizzo" rows="2" placeholder="Via..." style="width:100%"></textarea>
+              <label>Location</label>
+              <input id="ev-location" placeholder="Es. Nome Locale" value="${evt.location}">
             </div>
 
             <div class="form-group">
-            <label>Link Maps</label>
-            <input id="ev-maps" placeholder="Incolla link Google Maps" style="width:100%">
+              <label>Indirizzo</label>
+              <textarea id="ev-indirizzo" rows="2" placeholder="Via...">${evt.indirizzo}</textarea>
             </div>
 
             <div class="form-group">
-            <div class="toggle-container">
-                <button id="rankedBtn" onclick="setRanked(true)" class="toggle-btn">Ranked</button>
-                <button id="unrankedBtn" onclick="setRanked(false)" class="toggle-btn active">Unranked</button>
-            </div>
+              <label>Link Maps</label>
+              <input id="ev-maps" placeholder="Incolla link Google Maps" value="${evt.maps}">
             </div>
 
             <div class="form-group">
-            <label>Quota (€)</label>
-            <input id="ev-quota" type="number" min="0" style="width:100%">
+              <div class="toggle-container">
+                  <button id="rankedBtn" onclick="setRanked(true)" class="toggle-btn ${activeR}">Ranked</button>
+                  <button id="unrankedBtn" onclick="setRanked(false)" class="toggle-btn ${activeU}">Unranked</button>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Quota (€)</label>
+              <input id="ev-quota" type="number" min="0" value="${evt.quota}">
             </div>
         </div>
 
         <div class="actions-row">
-          <button class="btn-full" onclick="saveEvento()">SALVA</button>
+          <button class="btn-full" onclick="${saveAction}">SALVA</button>
           <button class="btn-outline" onclick="closeOverlay()">ANNULLA</button>
         </div>
       </div>
     </div>
   `);
-  window.eventRanked = false;
 }
 
 /* ====== OVERLAY DETTAGLI (SOLO LETTURA) ====== */
 function openDettagliEvento(mese, index) {
+  // Chiudiamo eventuali overlay aperti prima (sicurezza)
+  closeOverlay();
+
   const eventi = storage.get("eventi", defaultEventi);
   const e = eventi[mese][index];
 
-  // Formattazione dati
   const dataBella = new Date(e.date).toLocaleDateString("it-IT", { weekday: 'short', day: 'numeric', month: 'long' });
   const tipoLabel = e.ranked ? "<span style='color:#ff6a00'>RANKED</span>" : "UNRANKED";
   const mapLink = e.maps ? `<a href="${e.maps}" target="_blank" style="color:#ff6a00">Apri Mappa</a>` : "N/D";
@@ -193,47 +216,48 @@ function openDettagliEvento(mese, index) {
         </div>
 
         <div class="actions-row" style="margin-top:20px;">
-          <button class="btn-outline" onclick="closeOverlay()" style="width:100%">CHIUDI</button>
+          <button class="btn-full" onclick="closeOverlay(); openOverlayEvento('${mese}', ${index})">MODIFICA</button>
+          <button class="btn-outline" onclick="closeOverlay()">CHIUDI</button>
         </div>
       </div>
     </div>
   `);
 }
 
-/* ====== LOGICA ====== */
-function setRanked(val) {
-  window.eventRanked = val;
-  document.getElementById("rankedBtn").classList.toggle("active", val);
-  document.getElementById("unrankedBtn").classList.toggle("active", !val);
-}
-
-/* ====== SALVATAGGIO EVENTO (CORRETTO) ====== */
-
-function saveEvento() {
+/* ====== SALVATAGGIO (INTELLIGENTE) ====== */
+// Accetta parametri opzionali: se ci sono, stiamo modificando un evento esistente
+function saveEvento(oldMese = null, oldIndex = null) {
   const date = document.getElementById("ev-date").value;
   if (!date) return alert("Manca la data!");
 
-  // 1. Recuperiamo il valore della mappa
+  // 1. Gestione Link Maps (aggiunge https se manca)
   let mapLink = ev("ev-maps").trim();
-
-  // 2. Se c'è un link, controlliamo se ha il protocollo
   if (mapLink && !mapLink.startsWith("http://") && !mapLink.startsWith("https://")) {
     mapLink = "https://" + mapLink;
   }
 
-  const mese = date.slice(0, 7);
   const eventi = storage.get("eventi", defaultEventi);
 
-  if (!eventi[mese]) eventi[mese] = [];
+  // 2. SE STIAMO MODIFICANDO: Rimuoviamo prima il vecchio evento
+  // (Così se hai cambiato la data, non rimane il duplicato nel mese vecchio)
+  if (oldMese !== null && oldIndex !== null) {
+    eventi[oldMese].splice(oldIndex, 1);
+    // Pulizia: se il mese vecchio rimane vuoto, si potrebbe cancellare la chiave, 
+    // ma renderCalendar lo gestisce già nascondendolo.
+  }
 
-  eventi[mese].push({
+  // 3. Creiamo/Inseriamo il nuovo evento
+  const nuovoMese = date.slice(0, 7);
+  if (!eventi[nuovoMese]) eventi[nuovoMese] = [];
+
+  eventi[nuovoMese].push({
     date: date,
     checkin: ev("ev-checkin"),
     start: ev("ev-start"),
     provincia: ev("ev-provincia"),
     location: ev("ev-location"),
     indirizzo: ev("ev-indirizzo"),
-    maps: mapLink, // Usiamo il link corretto
+    maps: mapLink,
     ranked: window.eventRanked,
     quota: Number(ev("ev-quota"))
   });
@@ -243,9 +267,16 @@ function saveEvento() {
   openRegistroEventi();
 }
 
+/* ====== LOGICA UTILITY ====== */
+
+function setRanked(val) {
+  window.eventRanked = val;
+  document.getElementById("rankedBtn").classList.toggle("active", val);
+  document.getElementById("unrankedBtn").classList.toggle("active", !val);
+}
 
 function deleteEvento(mese, index) {
-  if(!confirm("Eliminare evento?")) return;
+  if(!confirm("Eliminare evento definitivamente?")) return;
   const eventi = storage.get("eventi", defaultEventi);
   eventi[mese].splice(index, 1);
   storage.set("eventi", eventi);
