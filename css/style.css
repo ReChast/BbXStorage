@@ -37,7 +37,7 @@ body::before {
   /* MODIFICATO: non usiamo 100% ma una larghezza che lasci spazio ai lati */
   width: auto; 
   max-width: 100%; /* Si adatta allo schermo senza superarlo */
-  max-height: 120px; /* Evita che diventi troppo alto su schermi grandi */
+  max-height: 180px; /* Evita che diventi troppo alto su schermi grandi */
   
   display: block;
   object-fit: contain;
