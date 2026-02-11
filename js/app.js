@@ -101,92 +101,134 @@ function uploadBackup() {
 
 mainmenu();
 
-/* ====== GESTIONE AUDIO ====== */
+/* ====== SISTEMA AUDIO A BASSA LATENZA (WEB AUDIO API) ====== */
 
-// 1. Configurazione Iniziale
-const bgMusic = document.getElementById("bg-music");
-const sfxClick = document.getElementById("sfx-click");
+// 1. Creiamo il contesto audio (il motore sonoro)
+const AudioContext = window.AudioContext || window.webkitAudioContext;
+const audioCtx = new AudioContext();
+
+// Variabili per i suoni in memoria (Buffer)
+let musicBuffer = null;
+let clickBuffer = null;
+let musicSource = null; // Serve per fermare/riavviare la musica
+
+// Stato
+let isMuted = localStorage.getItem("audioMuted") === "true";
 const muteBtn = document.getElementById("mute-btn");
 
-// Volume (opzionale: abbassa la musica per sentire meglio i click)
-bgMusic.volume = 0.2; 
-sfxClick.volume = 1.0;
+// 2. FUNZIONE PER CARICARE I SUONI IN MEMORIA (Fetch & Decode)
+async function loadSound(url) {
+  try {
+    const response = await fetch(url);
+    const arrayBuffer = await response.arrayBuffer();
+    return await audioCtx.decodeAudioData(arrayBuffer);
+  } catch (error) {
+    console.error("Errore caricamento suono:", url, error);
+  }
+}
 
-// Leggiamo lo stato salvato (Se non c'è, parte muto per evitare blocchi browser)
-let isMuted = localStorage.getItem("audioMuted") === "true"; 
-// Oppure metti 'false' se vuoi che parta attivo (ma il browser potrebbe bloccarlo)
+// Carichiamo subito i file
+async function initAudio() {
+  musicBuffer = await loadSound('assets/music.mp3');
+  clickBuffer = await loadSound('assets/click.mp3');
+  updateUI();
+}
+initAudio(); // Avvia caricamento
 
-updateMuteIcon();
 
-// 2. Funzione per attivare/disattivare
+// 3. FUNZIONE PER SUONARE IL CLICK (Istantaneo)
+function playClickSound() {
+  if (isMuted || !clickBuffer) return;
+
+  // Crea una sorgente usa-e-getta (super veloce)
+  const source = audioCtx.createBufferSource();
+  source.buffer = clickBuffer;
+  
+  // Collega al volume e poi alle casse
+  const gainNode = audioCtx.createGain();
+  gainNode.gain.value = 1.0; // Volume click
+  source.connect(gainNode);
+  gainNode.connect(audioCtx.destination);
+  
+  source.start(0); // PARTI SUBITO
+}
+
+
+// 4. FUNZIONE PER LA MUSICA (Loop)
+function playMusic() {
+  if (isMuted || !musicBuffer) return;
+  if (musicSource) return; // Sta già suonando
+
+  musicSource = audioCtx.createBufferSource();
+  musicSource.buffer = musicBuffer;
+  musicSource.loop = true; // Ripeti all'infinito
+  
+  const gainNode = audioCtx.createGain();
+  gainNode.gain.value = 0.4; // Volume Musica
+  
+  musicSource.connect(gainNode);
+  gainNode.connect(audioCtx.destination);
+  
+  musicSource.start(0);
+}
+
+function stopMusic() {
+  if (musicSource) {
+    musicSource.stop();
+    musicSource = null;
+  }
+}
+
+
+// 5. GESTIONE MUTE
 function toggleAudio() {
   isMuted = !isMuted;
   localStorage.setItem("audioMuted", isMuted);
-  
-  updateMuteIcon();
-  
-  if (!isMuted) {
-    // Se riattiviamo l'audio, proviamo a far partire la musica
-    playMusic();
-  } else {
-    bgMusic.pause();
-  }
-}
+  updateUI();
 
-// 3. Aggiorna l'icona
-function updateMuteIcon() {
   if (isMuted) {
-    muteBtn.innerText = "🔇";
-    muteBtn.classList.remove("active");
-    bgMusic.pause();
+    stopMusic();
   } else {
-    muteBtn.innerText = "🔊";
-    muteBtn.classList.add("active");
-    // Nota: La musica partirà al primo click utente se bloccata
-  }
-}
-
-// 4. Funzione sicura per far partire la musica
-function playMusic() {
-  if (isMuted) return;
-  
-  // I browser richiedono una "promessa" per suonare
-  bgMusic.play().catch(error => {
-    console.log("Autoplay bloccato dal browser: serve un click dell'utente.");
-  });
-}
-
-/* ... codice precedente (mute, variabili, ecc) ... */
-
-// 5. GLOBAL CLICK LISTENER (VERSIONE MIGLIORATA PER MOBILE)
-document.addEventListener("click", (e) => {
-  
-  // A. Tentativo di avvio musica al primo tocco
-  if (!isMuted && bgMusic.paused) {
+    // Se il contesto è sospeso (succede su iOS), riattiviamolo
+    if (audioCtx.state === 'suspended') {
+      audioCtx.resume();
+    }
     playMusic();
   }
+}
 
-  // B. Effetto Sonoro Click
-  // Cerca se l'elemento cliccato (o uno dei suoi genitori) è cliccabile
+function updateUI() {
+  if (muteBtn) {
+    muteBtn.innerText = isMuted ? "🔇" : "🔊";
+    muteBtn.classList.toggle("active", !isMuted);
+  }
+}
+
+
+// 6. SBLOCCO AUDIO IOS + TRIGGER SUONI
+// iOS blocca l'audio finché non tocchi lo schermo.
+// Usiamo 'touchstart' per intercettare il tocco PRIMA del click.
+
+let unlocked = false;
+
+document.addEventListener('touchstart', (e) => {
+  // A. Sblocco iniziale (solo la prima volta)
+  if (!unlocked) {
+    audioCtx.resume().then(() => {
+      unlocked = true;
+      if (!isMuted) playMusic();
+    });
+  }
+
+  // B. SUONO CLICK (Se tocchi un bottone)
+  // Usiamo touchstart: è 300ms più veloce del click!
   const target = e.target.closest("button") || 
                  e.target.closest("a") || 
                  e.target.closest(".icon-link") ||
-                 e.target.closest(".input-field"); // Aggiunto per i campi di testo
+                 e.target.closest(".input-field");
 
-  if (target) {
-    if (!isMuted) {
-      // Metodo "REWIND": molto più veloce su mobile rispetto a cloneNode
-      sfxClick.currentTime = 0; 
-      
-      // Promessa di play gestita per evitare errori in console
-      const playPromise = sfxClick.play();
-      
-      if (playPromise !== undefined) {
-        playPromise.catch(error => {
-          // I browser a volte bloccano i suoni rapidi, ignoriamo l'errore
-          console.log("Audio click interrotto o bloccato");
-        });
-      }
-    }
+  if (target && target.id !== "mute-btn") {
+    playClickSound();
   }
-});
+
+}, { passive: true }); // passive: true migliora le prestazioni dello scroll
