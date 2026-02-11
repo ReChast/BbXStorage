@@ -146,7 +146,7 @@ function playClickSound() {
   
   // Collega al volume e poi alle casse
   const gainNode = audioCtx.createGain();
-  gainNode.gain.value = 1.0; // Volume click
+  gainNode.gain.value = 0.5; // Volume click
   source.connect(gainNode);
   gainNode.connect(audioCtx.destination);
   
@@ -164,7 +164,7 @@ function playMusic() {
   musicSource.loop = true; // Ripeti all'infinito
   
   const gainNode = audioCtx.createGain();
-  gainNode.gain.value = 0.4; // Volume Musica
+  gainNode.gain.value = 0.1; // Volume Musica
   
   musicSource.connect(gainNode);
   gainNode.connect(audioCtx.destination);
