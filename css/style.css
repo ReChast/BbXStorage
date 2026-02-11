@@ -73,8 +73,8 @@ h1, h2 {
 .menu {
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  max-width: 320px;
+  gap: 14px;
+  max-width: 250px;
   margin: auto;
 }
 
