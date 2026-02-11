@@ -100,3 +100,84 @@ function uploadBackup() {
 
 
 mainmenu();
+
+/* ====== GESTIONE AUDIO ====== */
+
+// 1. Configurazione Iniziale
+const bgMusic = document.getElementById("bg-music");
+const sfxClick = document.getElementById("sfx-click");
+const muteBtn = document.getElementById("mute-btn");
+
+// Volume (opzionale: abbassa la musica per sentire meglio i click)
+bgMusic.volume = 0.4; 
+sfxClick.volume = 1.0;
+
+// Leggiamo lo stato salvato (Se non c'è, parte muto per evitare blocchi browser)
+let isMuted = localStorage.getItem("audioMuted") === "true"; 
+// Oppure metti 'false' se vuoi che parta attivo (ma il browser potrebbe bloccarlo)
+
+updateMuteIcon();
+
+// 2. Funzione per attivare/disattivare
+function toggleAudio() {
+  isMuted = !isMuted;
+  localStorage.setItem("audioMuted", isMuted);
+  
+  updateMuteIcon();
+  
+  if (!isMuted) {
+    // Se riattiviamo l'audio, proviamo a far partire la musica
+    playMusic();
+  } else {
+    bgMusic.pause();
+  }
+}
+
+// 3. Aggiorna l'icona
+function updateMuteIcon() {
+  if (isMuted) {
+    muteBtn.innerText = "🔇";
+    muteBtn.classList.remove("active");
+    bgMusic.pause();
+  } else {
+    muteBtn.innerText = "🔊";
+    muteBtn.classList.add("active");
+    // Nota: La musica partirà al primo click utente se bloccata
+  }
+}
+
+// 4. Funzione sicura per far partire la musica
+function playMusic() {
+  if (isMuted) return;
+  
+  // I browser richiedono una "promessa" per suonare
+  bgMusic.play().catch(error => {
+    console.log("Autoplay bloccato dal browser: serve un click dell'utente.");
+  });
+}
+
+// 5. GLOBAL CLICK LISTENER (La Magia)
+// Ascolta ogni click sulla pagina. Se è un bottone o un link -> Suona Click
+document.addEventListener("click", (e) => {
+  
+  // A. Tentativo di avvio musica al primo tocco (Hack per Safari/Chrome)
+  if (!isMuted && bgMusic.paused) {
+    playMusic();
+  }
+
+  // B. Effetto Sonoro Click
+  // Controlla se abbiamo cliccato un bottone, un link o un input
+  if (e.target.tagName === "BUTTON" || 
+      e.target.tagName === "A" || 
+      e.target.closest("button") || 
+      e.target.closest(".icon-link")) {
+        
+    if (!isMuted) {
+      // Clona il suono per poterlo suonare velocemente più volte di fila
+      const sound = sfxClick.cloneNode(); 
+      sound.volume = 1.0;
+      sound.play().catch(() => {});
+    }
+  }
+});
+
