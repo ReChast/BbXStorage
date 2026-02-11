@@ -266,3 +266,40 @@ textarea {
 .btn-icon.trash:hover {
   background: rgba(255, 0, 0, 0.2);
 }
+
+
+/* Tasto MUTE Fisso */
+.mute-toggle {
+  position: fixed;
+  top: 15px;
+  right: 15px;
+  z-index: 1000; /* Sta sopra a tutto */
+  
+  background: rgba(0, 0, 0, 0.6); /* Sfondo scuro semitrasparente */
+  border: 1px solid #ff6a00;
+  color: #fff;
+  border-radius: 50%; /* Rotondo */
+  
+  width: 40px;
+  height: 40px;
+  font-size: 18px;
+  padding: 0;
+  
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  box-shadow: 0 0 10px rgba(0,0,0,0.5);
+  transition: all 0.3s ease;
+}
+
+.mute-toggle:active {
+  transform: scale(0.9);
+}
+
+/* Quando l'audio è ATTIVO, il tasto si illumina */
+.mute-toggle.active {
+  background: rgba(255, 106, 0, 0.2);
+  box-shadow: 0 0 15px #ff6a00;
+}
+
