@@ -101,99 +101,95 @@ function uploadBackup() {
 
 mainmenu();
 
-/* ====== SISTEMA AUDIO A BASSA LATENZA (WEB AUDIO API) ====== */
+/* ====== AUDIO SYSTEM IBRIDO (Click Istantaneo + Musica Streaming) ====== */
 
-// 1. Creiamo il contesto audio (il motore sonoro)
+// --- 1. SETUP CLICK (Web Audio API - Per velocità massima) ---
 const AudioContext = window.AudioContext || window.webkitAudioContext;
 const audioCtx = new AudioContext();
-
-// Variabili per i suoni in memoria (Buffer)
-let musicBuffer = null;
 let clickBuffer = null;
-let musicSource = null; // Serve per fermare/riavviare la musica
+
+// Carichiamo solo il CLICK in memoria (è piccolo, ci mette un attimo)
+async function loadClick() {
+  try {
+    const response = await fetch('assets/click.mp3');
+    const arrayBuffer = await response.arrayBuffer();
+    clickBuffer = await audioCtx.decodeAudioData(arrayBuffer);
+  } catch (e) { console.error("Errore click:", e); }
+}
+loadClick(); // Avvia subito
+
+function playClickSound() {
+  if (isMuted || !clickBuffer) return;
+  
+  // Riattiva il contesto se iOS lo ha sospeso
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+
+  const source = audioCtx.createBufferSource();
+  source.buffer = clickBuffer;
+  const gainNode = audioCtx.createGain();
+  gainNode.gain.value = 1.0; // Volume Click
+  source.connect(gainNode);
+  gainNode.connect(audioCtx.destination);
+  source.start(0);
+}
+
+
+// --- 2. SETUP MUSICA (HTML5 Audio - Per avvio rapido in streaming) ---
+const bgMusic = new Audio('assets/music.mp3');
+bgMusic.loop = true;
+bgMusic.volume = 0.4; // Volume Musica
+bgMusic.preload = 'auto'; // Dice al browser di iniziare a scaricare subito
 
 // Stato
 let isMuted = localStorage.getItem("audioMuted") === "true";
 const muteBtn = document.getElementById("mute-btn");
+let musicStarted = false; // Serve per sapere se la musica è già partita una volta
 
-// 2. FUNZIONE PER CARICARE I SUONI IN MEMORIA (Fetch & Decode)
-async function loadSound(url) {
-  try {
-    const response = await fetch(url);
-    const arrayBuffer = await response.arrayBuffer();
-    return await audioCtx.decodeAudioData(arrayBuffer);
-  } catch (error) {
-    console.error("Errore caricamento suono:", url, error);
+// --- 3. LOGICA DI SBLOCCO (Il cuore del sistema) ---
+
+// Funzione che prova ad avviare tutto
+function tryStartAudio() {
+  // A. Sblocca il motore dei Click
+  if (audioCtx.state === 'suspended') {
+    audioCtx.resume();
+  }
+
+  // B. Avvia la musica (se non è muto e non è già partita)
+  if (!isMuted && !musicStarted) {
+    // Il play restituisce una promessa: gestiamo errori (es. utente non ha ancora interagito abbastanza)
+    const playPromise = bgMusic.play();
+    
+    if (playPromise !== undefined) {
+      playPromise.then(() => {
+        musicStarted = true;
+        // Rimuoviamo il listener "touchstart" perché ormai abbiamo sbloccato tutto
+        document.removeEventListener('touchstart', tryStartAudio);
+        document.removeEventListener('click', tryStartAudio);
+      }).catch(error => {
+        console.log("Autoplay bloccato, riproverò al prossimo tocco.");
+      });
+    }
   }
 }
 
-// Carichiamo subito i file
-async function initAudio() {
-  musicBuffer = await loadSound('assets/music.mp3');
-  clickBuffer = await loadSound('assets/click.mp3');
-  updateUI();
-}
-initAudio(); // Avvia caricamento
+// Ascoltiamo il primo tocco ovunque per far partire la festa
+document.addEventListener('touchstart', tryStartAudio, { passive: true });
+document.addEventListener('click', tryStartAudio, { passive: true });
 
 
-// 3. FUNZIONE PER SUONARE IL CLICK (Istantaneo)
-function playClickSound() {
-  if (isMuted || !clickBuffer) return;
-
-  // Crea una sorgente usa-e-getta (super veloce)
-  const source = audioCtx.createBufferSource();
-  source.buffer = clickBuffer;
-  
-  // Collega al volume e poi alle casse
-  const gainNode = audioCtx.createGain();
-  gainNode.gain.value = 0.5; // Volume click
-  source.connect(gainNode);
-  gainNode.connect(audioCtx.destination);
-  
-  source.start(0); // PARTI SUBITO
-}
-
-
-// 4. FUNZIONE PER LA MUSICA (Loop)
-function playMusic() {
-  if (isMuted || !musicBuffer) return;
-  if (musicSource) return; // Sta già suonando
-
-  musicSource = audioCtx.createBufferSource();
-  musicSource.buffer = musicBuffer;
-  musicSource.loop = true; // Ripeti all'infinito
-  
-  const gainNode = audioCtx.createGain();
-  gainNode.gain.value = 0.1; // Volume Musica
-  
-  musicSource.connect(gainNode);
-  gainNode.connect(audioCtx.destination);
-  
-  musicSource.start(0);
-}
-
-function stopMusic() {
-  if (musicSource) {
-    musicSource.stop();
-    musicSource = null;
-  }
-}
-
-
-// 5. GESTIONE MUTE
+// --- 4. GESTIONE TOGGLE MUTE ---
 function toggleAudio() {
   isMuted = !isMuted;
   localStorage.setItem("audioMuted", isMuted);
   updateUI();
 
   if (isMuted) {
-    stopMusic();
+    bgMusic.pause();
   } else {
-    // Se il contesto è sospeso (succede su iOS), riattiviamolo
-    if (audioCtx.state === 'suspended') {
-      audioCtx.resume();
-    }
-    playMusic();
+    // Se riattiviamo l'audio, proviamo a far ripartire la musica
+    // Se l'utente ha già toccato lo schermo, partirà subito.
+    bgMusic.play().catch(e => console.log(e));
+    if (audioCtx.state === 'suspended') audioCtx.resume();
   }
 }
 
@@ -203,32 +199,20 @@ function updateUI() {
     muteBtn.classList.toggle("active", !isMuted);
   }
 }
+// Setta l'icona iniziale corretta
+updateUI();
 
 
-// 6. SBLOCCO AUDIO IOS + TRIGGER SUONI
-// iOS blocca l'audio finché non tocchi lo schermo.
-// Usiamo 'touchstart' per intercettare il tocco PRIMA del click.
-
-let unlocked = false;
-
-document.addEventListener('touchstart', (e) => {
-  // A. Sblocco iniziale (solo la prima volta)
-  if (!unlocked) {
-    audioCtx.resume().then(() => {
-      unlocked = true;
-      if (!isMuted) playMusic();
-    });
-  }
-
-  // B. SUONO CLICK (Se tocchi un bottone)
-  // Usiamo touchstart: è 300ms più veloce del click!
+// --- 5. TRIGGER CLICK (Ignora Swipe) ---
+document.addEventListener('click', (e) => {
+  // Verifica se abbiamo cliccato un elemento interattivo
   const target = e.target.closest("button") || 
                  e.target.closest("a") || 
                  e.target.closest(".icon-link") ||
                  e.target.closest(".input-field");
 
+  // Se è un bottone e NON è il tasto mute (per evitare doppio feedback)
   if (target && target.id !== "mute-btn") {
     playClickSound();
   }
-
-}, { passive: true }); // passive: true migliora le prestazioni dello scroll
+});
